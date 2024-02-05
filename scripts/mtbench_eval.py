@@ -10,7 +10,7 @@ import wandb
 from fastchat.llm_judge.common import load_questions
 from fastchat.llm_judge.gen_model_answer import run_eval
 from fastchat.llm_judge.gen_api_answer import get_api_answer
-from fastchat.llm_judge.gen_judgment import *
+from fastchat.llm_judge.gen_judgment import make_judge_pairwise, make_judge_single, make_match_single, make_match, make_match_all_pairs
 from fastchat.llm_judge.common import (
         load_questions,
         load_model_answers,
