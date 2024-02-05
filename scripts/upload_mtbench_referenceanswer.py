@@ -39,8 +39,8 @@ with wandb.init(entity=args.entity, project=args.project, job_type="upload_data"
                                     description="This dataset is based on version {}".format(args.dataset_version))
     
     # track lineage
-    run.use_artifact('wandb-japan/llm-leaderboard/mtbench_ja_prompt:v0', type='dataset')
-    run.use_artifact('wandb-japan/llm-leaderboard/mtbench_ja_question:v0', type='dataset')
+    run.use_artifact(f'{args.entity}/{args.project}/mtbench_ja_prompt:v0', type='dataset')
+    run.use_artifact(f'{args.entity}/{args.project}/mtbench_ja_question:v0', type='dataset')
 
     dataset_artifact.add_file(args.file_path)
 
