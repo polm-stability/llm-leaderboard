@@ -11,9 +11,11 @@ from mtbench_eval import mtbench_evaluate
 from config_singleton import WandbConfigSingleton
 from cleanup import cleanup_gpu
 
+conf_file = sys.argv[1]
+
 # Configuration loading
-if os.path.exists("configs/config.yaml"):
-    cfg = OmegaConf.load("configs/config.yaml")
+if os.path.exists(conf_file):
+    cfg = OmegaConf.load(conf_file)
     cfg_dict = OmegaConf.to_container(cfg, resolve=True)
     assert isinstance(cfg_dict, dict)
 else:
@@ -42,15 +44,15 @@ cfg = WandbConfigSingleton.get_instance().config
 
 # Save configuration as artifact
 if cfg.wandb.log:
-    if os.path.exists("configs/config.yaml"):
-        artifact_config_path = "configs/config.yaml"
+    if os.path.exists(conf_file):
+        artifact_config_path = conf_file
     else:
         # If "configs/config.yaml" does not exist, write the contents of run.config as a YAML configuration string
         instance = WandbConfigSingleton.get_instance()
         assert isinstance(instance.config, DictConfig), "instance.config must be a DictConfig"
-        with open("configs/config.yaml", 'w') as f:
+        with open(conf_file, 'w') as f:
             f.write(OmegaConf.to_yaml(instance.config))
-        artifact_config_path = "configs/config.yaml"
+        artifact_config_path = conf_file
 
     artifact = wandb.Artifact('config', type='config')
     artifact.add_file(artifact_config_path)
