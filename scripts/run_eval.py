@@ -15,18 +15,25 @@ def parse_args():
     parser = argparse.ArgumentParser(
         prog="nejumi eval", description="Run nejumi evaluation"
     )
-    parser.add_argument("config")
+    parser.add_argument("-c", "--config", default="configs/stable-base.yaml", help="Config file to use")
+    parser.add_argument("-m", "--model", help="Model path or name to use")
+    parser.add_argument("--llm-jp-eval", help="Run only llm-jp-eval", action="store_true")
+    parser.add_argument("--mtbench", help="Run only mt-bench", action="store_true")
 
     args = parser.parse_args()
     return args
 
 
-def load_config(conf_file):
+def load_config(conf_file, model_path):
     # Configuration loading
     if os.path.exists(conf_file):
         cfg = OmegaConf.load(conf_file)
         cfg_dict = OmegaConf.to_container(cfg, resolve=True)
         assert isinstance(cfg_dict, dict)
+        if model_path:
+            # Note this assumes the tokenizer is included with the model.
+            cfg_dict["model"]["pretrained_model_name_or_path"] = model_path
+            cfg_dict["tokenizer"]["pretrained_model_name_or_path"] = model_path
     else:
         # Provide default settings in case config.yaml does not exist
         cfg_dict = {
@@ -95,11 +102,17 @@ def finish(run, cfg):
 
 def main():
     args = parse_args()
-    cfg_dict = load_config(args.config)
+    cfg_dict = load_config(args.config, args.model)
     run, cfg = wandb_setup(cfg_dict, args.config)
 
-    run_llm_jp()
-    run_mt_bench()
+    # If only one is specified run that, otherwise run both
+    if args.llm_jp_eval:
+        run_llm_jp()
+    elif args.mtbench:
+        run_mt_bench()
+    else:
+        run_llm_jp()
+        run_mt_bench()
 
     finish(run, cfg)
 
