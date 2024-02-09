@@ -1,7 +1,7 @@
 wandb:
   log: True
-  entity: "polm-stability"
-  project: "jslm2"
+  entity: "stability-llm"
+  project: "nejumi"
   run_name: "test run" 
 
 github_version: v2.0.0 #for recording
@@ -64,9 +64,9 @@ metainfo:
 
 # for mtbench
 mtbench:
-  question_artifacts_path: 'polm-stability/nejumi/mtbench_ja_question:v0' # if testmode is true, small dataset will be used
-  referenceanswer_artifacts_path: 'polm-stability/nejumi/mtbench_ja_referenceanswer:v0' # if testmode is true, small dataset will be used
-  judge_prompt_artifacts_path: 'polm-stability/nejumi/mtbench_ja_prompt:v0' 
+  question_artifacts_path: 'stability-llm/nejumi/mtbench_ja_question:v1' # if testmode is true, small dataset will be used
+  referenceanswer_artifacts_path: 'stability-llm/nejumi/mtbench_ja_referenceanswer:v0' # if testmode is true, small dataset will be used
+  judge_prompt_artifacts_path: 'stability-llm/nejumi/mtbench_ja_prompt:v0' 
   bench_name: 'japanese_mt_bench'
   model_id: null # cannot use '<', '>', ':', '"', '/', '\\', '|', '?', '*', '.'
   question_begin: null 
