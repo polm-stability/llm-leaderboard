@@ -68,7 +68,7 @@ mtbench:
   referenceanswer_artifacts_path: 'stability-llm/nejumi/mtbench_ja_referenceanswer:v0' # if testmode is true, small dataset will be used
   judge_prompt_artifacts_path: 'stability-llm/nejumi/mtbench_ja_prompt:v0' 
   bench_name: 'japanese_mt_bench'
-  model_id: null # cannot use '<', '>', ':', '"', '/', '\\', '|', '?', '*', '.'
+  model_id: jslm-zephyr # cannot use '<', '>', ':', '"', '/', '\\', '|', '?', '*', '.'
   question_begin: null 
   question_end: null 
   max_new_token: 1024
