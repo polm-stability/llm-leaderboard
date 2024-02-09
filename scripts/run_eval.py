@@ -5,9 +5,6 @@ import sys
 import argparse
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
-
-sys.path.append("llm-jp-eval/src")
-sys.path.append("FastChat")
 from llm_jp_eval.evaluator import evaluate
 from mtbench_eval import mtbench_evaluate
 from config_singleton import WandbConfigSingleton

@@ -110,3 +110,7 @@ tiktoken==0.5.2 ; python_version >= "3.9" and python_version < "4.0"
 transformers_stream_generator==0.0.4 ; python_version >= "3.9" and python_version < "4.0"
 mistralai==0.0.8 ; python_version >= "3.9" and python_version < "4.0"
 langchain-mistralai==0.0.1 ; python_version >= "3.9" and python_version < "4.0"
+
+# special branches
+fschat @ git+https://github.com/polm-stability/FastChat@nejumi
+llm-jp-eval @ git+https://github.com/polm-stability/llm-jp-eval@stability-nejumi
