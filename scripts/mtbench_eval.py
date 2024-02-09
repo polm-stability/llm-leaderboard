@@ -26,17 +26,12 @@ from fastchat.llm_judge.common import (
     play_a_match_single,
     NEED_REF_CATS,
 )
-from config_singleton import WandbConfigSingleton
 from fastchat.conversation import initialize_custom_template
 from fastchat.utils import str_to_torch_dtype
 from omegaconf import OmegaConf
 
 
-def mtbench_evaluate():
-    # Retrieve the instance from WandbConfigSingleton and load the W&B run and configuration
-    instance = WandbConfigSingleton.get_instance()
-    run = instance.run
-    cfg = instance.config
+def mtbench_evaluate(run, cfg):
     # Get the table for the leaderboard
     leaderboard_table = instance.table
 

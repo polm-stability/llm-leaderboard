@@ -75,13 +75,13 @@ def wandb_setup(cfg_dict, conf_file):
     return run, cfg
 
 
-def run_llm_jp():
-    evaluate()
+def run_llm_jp(run, config):
+    evaluate(run, config)
     cleanup_gpu()
 
 
-def run_mt_bench():
-    mtbench_evaluate()
+def run_mt_bench(run, config):
+    mtbench_evaluate(run, config)
     cleanup_gpu()
 
 
