@@ -58,7 +58,8 @@ def wandb_setup(cfg_dict, conf_file):
     )
 
     # Initialize the WandbConfigSingleton
-    WandbConfigSingleton.initialize(run, wandb.Table(dataframe=pd.DataFrame()))
+    table = wandb.Table(dataframe=pd.DataFrame())
+    WandbConfigSingleton.initialize(run, table)
     cfg = WandbConfigSingleton.get_instance().config
 
     # Save configuration as artifact
@@ -79,42 +80,40 @@ def wandb_setup(cfg_dict, conf_file):
         artifact.add_file(artifact_config_path)
         run.log_artifact(artifact)
 
-    return run, cfg
+    return run, cfg, table
 
 
-def run_llm_jp(run, config):
-    evaluate(run, config)
+def run_llm_jp(run, config, table):
+    res = evaluate(run, config, table)
     cleanup_gpu()
+    return res
 
 
-def run_mt_bench(run, config):
-    mtbench_evaluate(run, config)
+def run_mt_bench(run, config, table):
+    res = mtbench_evaluate(run, config, table)
     cleanup_gpu()
+    return res
 
 
-def finish(run, cfg):
+def finish(run, cfg, table):
     # Logging results to W&B
     if cfg.wandb.log and run is not None:
-        instance = WandbConfigSingleton.get_instance()
-        run.log({"leaderboard_table": instance.table})
+        run.log({"leaderboard_table": table})
         run.finish()
 
 
 def main():
     args = parse_args()
     cfg_dict = load_config(args.config, args.model)
-    run, cfg = wandb_setup(cfg_dict, args.config)
+    run, cfg, table = wandb_setup(cfg_dict, args.config)
 
     # If only one is specified run that, otherwise run both
-    if args.llm_jp_eval:
-        run_llm_jp()
-    elif args.mtbench:
-        run_mt_bench()
-    else:
-        run_llm_jp()
-        run_mt_bench()
+    if not args.mtbench:
+        table = run_llm_jp(run, cfg, table)
+    if not args.llm_jp_eval:
+        table = run_mt_bench(run, cfg, table)
 
-    finish(run, cfg)
+    finish(run, cfg, table)
 
 
 if __name__ == "__main__":

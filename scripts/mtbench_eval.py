@@ -31,10 +31,7 @@ from fastchat.utils import str_to_torch_dtype
 from omegaconf import OmegaConf
 
 
-def mtbench_evaluate(run, cfg):
-    # Get the table for the leaderboard
-    leaderboard_table = instance.table
-
+def mtbench_evaluate(run, cfg, leaderboard_table):
     # create hash and append it to the model_id in order to avoid duplicated id
     mnaum_data = str(datetime.datetime.now())
     encoded_data = mnaum_data.encode()
@@ -72,7 +69,7 @@ def mtbench_evaluate(run, cfg):
         f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_answer"
     )
 
-    # refeerence answer
+    # reference answer
     if cfg.testmode:
         ref_answer_dir = run.use_artifact(
             "wandb-japan/llm-leaderboard/mtbench_ja_referenceanswer_small_for_test:v0",
@@ -319,16 +316,13 @@ def mtbench_evaluate(run, cfg):
     ## table for all
     mtbench_df = mtbench_df.drop(columns=["basemodel_name"])
     combined_df = pd.concat([leaderboard_table.get_dataframe(), mtbench_df], axis=1)
-    instance.table = wandb.Table(dataframe=combined_df)
 
     run.log(
         {
             "mtbench_output_table": table_log,
             "mtbench_leaderboard_table": table_metric,
             "mtbench_radar_table": table_radar,
-            # "leaderboard_table":instance.table
         }
     )
 
-    # run.finish()
-    return
+    return wandb.Table(dataframe=combined_df)
