@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import json
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from io import StringIO
@@ -61,13 +62,13 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
         artifact_dir = run.use_artifact(
             cfg.mtbench.question_artifacts_path, type="dataset"
         ).download()
-    question_file = artifact_dir + f"/question.jsonl"
+    question_file = Path(artifact_dir) / "question.jsonl"
 
     # create answerfile and answerdir
-    answer_file = f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_answer/{cfg.mtbench.model_id}.jsonl"
-    answer_dir = (
-        f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_answer"
-    )
+    data_dir = Path("out")
+    answer_dir = data_dir / cfg.mtbench.bench_name / "model_answer" 
+    answer_dir.mkdir(parents=True, exist_ok=True)
+    answer_file = answer_dir / (cfg.mtbench.model_id + ".jsonl")
 
     # reference answer
     if cfg.testmode:
@@ -90,6 +91,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
         cfg.model.pretrained_model_name_or_path = model_path
 
     # 1. generate model answers
+    # XXX This block is one of the slow parts
     if cfg.api in [
         "openai",
         "anthropic",
@@ -137,16 +139,18 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
 
     models = [cfg.mtbench.model_id]  # get_model_list(answer_dir)
 
+    judge_dir = data_dir / cfg.mtbench.bench_name / "model_judgement" 
+    judge_dir.mkdir(parents=True, exist_ok=True)
     if cfg.mtbench.mode == "single":
         judges = make_judge_single(cfg.mtbench.judge_model, judge_prompts)
         play_a_match_func = play_a_match_single
-        output_file = f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_judgment/{cfg.mtbench.judge_model}_single.jsonl"
+        judge_file = judge_dir / f"{cfg.mtbench.judge_model}_single.jsonl"
         make_match_func = make_match_single
         baseline_model = None
     else:
         judges = make_judge_pairwise(cfg.mtbench.judge_model, judge_prompts)
         play_a_match_func = play_a_match_pair
-        output_file = f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_judgment/{cfg.mtbench.judge_model}_pair.jsonl"
+        judge_file = judge_dir / f"{cfg.mtbench.judge_model}_pair.jsonl"
         if cfg.mtbench.mode == "pairwise-all":
             make_match_func = make_match_all_pairs
             baseline_model = None
@@ -198,7 +202,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
     match_stat["model_list"] = models
     match_stat["total_num_questions"] = len(questions)
     match_stat["total_num_matches"] = len(matches)
-    match_stat["output_path"] = output_file
+    match_stat["output_path"] = str(judge_file)
 
     # Show match stats and prompt enter to continue
     print("Stats:")
@@ -206,13 +210,14 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
     # input("Press Enter to confirm...")
 
     # Play matches
+    # XXX this is the other slow part that actually calls the judge api
     if cfg.mtbench.parallel == 1:
         for match in tqdm(matches):
-            play_a_match_func(match, output_file=output_file)
+            play_a_match_func(match, output_file=judge_file)
     else:
 
         def play_a_match_wrapper(match):
-            play_a_match_func(match, output_file=output_file)
+            play_a_match_func(match, output_file=judge_file)
 
         np.random.seed(0)
         np.random.shuffle(matches)
@@ -225,6 +230,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
 
     # 3. consolidate results and log as wandb.Table
     # load questions
+
     df_question = pd.read_json(question_file, lines=True)
 
     # load answers
@@ -232,10 +238,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
     # The answer files generated through the API use the model name as the model ID.
     # However, for the answer files created by our local model implementation, the model ID is used as the model ID.
     # It will be necessary to make changes in the future to standardize this.
-    df_answer = pd.read_json(
-        f"FastChat/fastchat/llm_judge/data/{cfg.mtbench.bench_name}/model_answer/{cfg.mtbench.model_id}.jsonl",
-        lines=True,
-    )
+    df_answer = pd.read_json(answer_file, lines=True)
     df_answer = df_answer[
         (df_answer.model_id == cfg.mtbench.model_id)
         | (df_answer.model_id == cfg.model.pretrained_model_name_or_path)
@@ -243,7 +246,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
     df_answer = df_answer.sort_values(["question_id"])
 
     # load judge results
-    df_judge = pd.read_json(output_file, lines=True)
+    df_judge = pd.read_json(judge_file, lines=True)
     df_judge = df_judge[df_judge.model == cfg.mtbench.model_id]
     df_judge.model = df_judge.model.str.replace("--", "/")
     df_judge["hash"] = df_judge.model.apply(lambda x: x.split("_hash_")[-1])
