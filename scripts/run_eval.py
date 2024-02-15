@@ -62,6 +62,11 @@ def wandb_setup(cfg_dict, conf_file):
     WandbConfigSingleton.initialize(run, table)
     cfg = WandbConfigSingleton.get_instance().config
 
+    # add the run id to the model id
+    # this allows multiple runs with the same model without collisions
+    if cfg.mtbench.model_id is not None:
+        cfg.mtbench.model_id = f"{cfg.mtbench.model_id}_{run.id}"
+
     # Save configuration as artifact
     if cfg.wandb.log:
         if os.path.exists(conf_file):
