@@ -35,9 +35,10 @@ tokenizer:
 
 # for llm-jp-eval
 max_seq_length: 2048
-dataset_artifact: null # "stability-llm/nejumi-leaderboard/jaster:v0" #if you use artifacts, please fill here (if not, fill null)
-dataset_dir: "data/1.1.0/evaluation/test"
-target_dataset: "janli" # {all, jamp, janli, jcommonsenseqa, jemhopqa, jnli, jsem, jsick, jsquad, jsts, niilc, chabsa}
+dataset_artifact: "stability-llm/nejumi/jaster:v0"
+# this is appended to the local artifact dir
+dataset_dir: "/jaster/1.1.0/evaluation/test"
+target_dataset: "all"
 log_dir: "./logs"
 torch_dtype: "bf16" # {fp16, bf16, fp32}
 custom_prompt_template: null
