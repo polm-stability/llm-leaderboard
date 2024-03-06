@@ -33,7 +33,7 @@ jinja2==3.1.2 ; python_version >= "3.9" and python_version < "4.0"
 joblib==1.3.2 ; python_version >= "3.9" and python_version < "4.0"
 jsonpatch==1.33 ; python_version >= "3.9" and python_version < "4.0"
 jsonpointer==2.4 ; python_version >= "3.9" and python_version < "4.0"
-langchain==0.0.350 ; python_version >= "3.9" and python_version < "4.0"
+langchain
 langchain_google_genai==0.0.5 ; python_version >= "3.9" and python_version < "4.0"
 langsmith==0.0.69 ; python_version >= "3.9" and python_version < "4.0"
 levenshtein==0.21.1 ; python_version >= "3.9" and python_version < "4.0"
@@ -61,7 +61,7 @@ nvidia-nvtx-cu12==12.1.105 ; platform_system == "Linux" and platform_machine == 
 omegaconf==2.3.0 ; python_version >= "3.9" and python_version < "4.0"
 openai==0.28 ; python_version >= "3.9" and python_version < "4.0"
 packaging==23.2 ; python_version >= "3.9" and python_version < "4.0"
-pandas==1.5.3 ; python_version >= "3.9" and python_version < "4.0"
+pandas
 peft==0.5.0 ; python_version >= "3.9" and python_version < "4.0"
 plac==1.4.1 ; python_version >= "3.9" and python_version < "4.0"
 portalocker==2.8.2 ; python_version >= "3.9" and python_version < "4.0"
