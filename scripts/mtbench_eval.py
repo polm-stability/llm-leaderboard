@@ -158,6 +158,9 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
             make_match_func = make_match
             baseline_model = cfg.mtbench.baseline_model
 
+    # Make this a string since everything else expects that
+    judge_file = str(judge_file)
+
     check_data(questions, model_answers, ref_answers, models, judges)
 
     question_math = [q for q in questions if q["category"] in NEED_REF_CATS]
@@ -202,7 +205,7 @@ def mtbench_evaluate(run, cfg, leaderboard_table):
     match_stat["model_list"] = models
     match_stat["total_num_questions"] = len(questions)
     match_stat["total_num_matches"] = len(matches)
-    match_stat["output_path"] = str(judge_file)
+    match_stat["output_path"] = judge_file
 
     # Show match stats and prompt enter to continue
     print("Stats:")
