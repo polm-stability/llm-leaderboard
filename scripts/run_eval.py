@@ -5,8 +5,6 @@ import sys
 import argparse
 from omegaconf import DictConfig, OmegaConf
 import pandas as pd
-from llm_jp_eval.evaluator import evaluate
-from mtbench_eval import mtbench_evaluate
 from config_singleton import WandbConfigSingleton
 from cleanup import cleanup_gpu
 
@@ -91,12 +89,14 @@ def wandb_setup(cfg_dict, conf_file):
 
 
 def run_llm_jp(run, config, table):
+    from llm_jp_eval.evaluator import evaluate
     res = evaluate(run, config, table)
     cleanup_gpu()
     return res
 
 
 def run_mt_bench(run, config, table):
+    from mtbench_eval import mtbench_evaluate
     res = mtbench_evaluate(run, config, table)
     cleanup_gpu()
     return res
