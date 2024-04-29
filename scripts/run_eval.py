@@ -97,6 +97,13 @@ def run_llm_jp(run, config, table):
 
 def run_mt_bench(run, config, table):
     from mtbench_eval import mtbench_evaluate
+    # If API keys are not set, fail fast
+    try:
+        os.environ["AZURE_OPENAI_KEY"]
+    except KeyError:
+        print("You need to load your OpenAI keys!")
+        sys.exit(1)
+
     res = mtbench_evaluate(run, config, table)
     cleanup_gpu()
     return res
