@@ -124,12 +124,14 @@ def main():
     cfg_dict = load_config(args.config, args.model)
     run, cfg, table = wandb_setup(cfg_dict, args.config)
 
-    # If only one is specified run that, otherwise run both
-    if not args.mtbench:
-        run.name = run.name + " (llm-jp-eval only)"
+    # Run benchmarks if not turned off. If we're only doing one, note that in the name.
+    if args.llm_jp_eval:
+        if not args.mtbench:
+            run.name = run.name + " (llm-jp-eval only)"
         table = run_llm_jp(run, cfg, table)
-    if not args.llm_jp_eval:
-        run.name = run.name + " (mtbench only)"
+    if args.mtbench:
+        if not args.llm_jp_eval:
+            run.name = run.name + " (mtbench only)"
         table = run_mt_bench(run, cfg, table)
 
     finish(run, cfg, table)
