@@ -65,8 +65,8 @@ metainfo:
 
 # for mtbench
 mtbench:
-  question_artifacts_path: 'stability-llm/nejumi/mtbench_ja_question:v1' # if testmode is true, small dataset will be used
-  referenceanswer_artifacts_path: 'stability-llm/nejumi/mtbench_ja_referenceanswer:v0' # if testmode is true, small dataset will be used
+  question_artifacts_path: 'stability-llm/nejumi/mtbench_ja_question:v2' 
+  referenceanswer_artifacts_path: 'stability-llm/nejumi/mtbench_ja_referenceanswer:v1' 
   judge_prompt_artifacts_path: 'stability-llm/nejumi/mtbench_ja_prompt:v0' 
   bench_name: 'japanese_mt_bench'
   model_id: jslm-zephyr # cannot use '<', '>', ':', '"', '/', '\\', '|', '?', '*', '.'
