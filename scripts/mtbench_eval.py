@@ -30,6 +30,7 @@ from fastchat.llm_judge.common import (
 from fastchat.conversation import initialize_custom_template
 from fastchat.utils import str_to_torch_dtype
 from omegaconf import OmegaConf
+from concurrent.futures import ThreadPoolExecutor
 
 
 def mtbench_evaluate(run, cfg, leaderboard_table):
